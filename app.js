@@ -1,27 +1,56 @@
 const state = {
   turn: 'x',
   gameOver: false,
-  // grid: [['', '', ''], ['', '', ''], ['', '', '']]
-  grid: {
-    row1: ['', '', ''],
-    row2: ['', '', ''],
-    row3: ['', '', '']
+  grid: ['', '', '', '', '', '', '', '', ''],
+  updateGrid: function(cellIndex) {
+    this.grid[cellIndex] = this.turn;
+    const winPattern = checkForWinner();
+    if (winPattern) this.gameOver = true;
+  },
+  changeTurn: function() {
+    if (this.turn === 'x') {
+      this.turn = 'o';
+    } else {
+      this.turn = 'x';
+    }
   }
 };
 
 // State modification functions
-function changeTurn() {
-  // switch state.turn in here
-  if (state.turn === 'x') {
-    state.turn = 'o';
-  } else {
-    state.turn = 'x';
-  }
-}
-
 function setGameOverStatus(bool) {
   // set game over in here
   state.gameOver = bool;
+}
+
+function checkForWinner() {
+  console.log('checking for winner');
+  const winPatterns = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [2, 4, 6],
+    [0, 4, 8]
+  ];
+
+  for (let i = 0; i < winPatterns.length; i++) {
+    const winPattern = winPatterns[i];
+
+    // Prevent win with three nulls by checking first cell isn't null
+    if (!state.grid[winPattern[0]]) continue;
+
+    if (
+      state.grid[winPattern[0]] === state.grid[winPattern[1]] &&
+      state.grid[winPattern[1]] === state.grid[winPattern[2]]
+    ) {
+      console.log('winner');
+      return winPattern;
+    }
+  }
+
+  return null;
 }
 
 // Render functions
@@ -64,15 +93,30 @@ function initialBoardRender() {
   $('.board').html(boardHTML);
 }
 
-function updateBoard(cell) {
-  // cell.html(state.turn);
-  // changeTurn();
+function renderUpdatedGrid() {
+  const arrOfCells = $('.cell');
+  arrOfCells.each(function(index) {
+    const gridIndex = index;
+    $(this)
+      .children()
+      .html(state.grid[gridIndex]);
+  });
+}
+
+function updateStoreGrid(cell) {
+  // get cell id
+  const cellID = cell.attr('id');
+  const cellIndex = cellID;
+  console.log(`cell index: ${cellIndex}`);
+  state.updateGrid(cellIndex);
+  state.changeTurn();
 }
 
 // Event Listeners
 // Delegated cell listener
 $('.board').on('click', '.cell', function(event) {
-  updateBoard($(this).children());
+  updateStoreGrid($(this));
+  renderUpdatedGrid();
 });
 
 // On ready
