@@ -1,6 +1,6 @@
-/* global initialBoardRender */
+/* global Render */
 const state = {
-  turn: 'x',
+  turn: 'X',
   gameOver: false,
   winPattern: [],
   grid: ['', '', '', '', '', '', '', '', ''],
@@ -19,7 +19,7 @@ const state = {
   },
   // Function for changing whose turn it is
   changeTurn: function() {
-    this.turn === 'x' ? (this.turn = 'o') : (this.turn = 'x');
+    this.turn === 'X' ? (this.turn = 'O') : (this.turn = 'X');
   },
   // Function for starting a new game
   startNewGame: function() {
@@ -28,7 +28,7 @@ const state = {
     this.gameOver = false;
     this.winPattern = [];
     // Initialize the board again
-    initialBoardRender();
+    Render.initialBoardRender();
   },
   // Function for checking if there is a winner
   checkForWinner: function() {

@@ -3,7 +3,7 @@
 /***** Render functions *****/
 const Render = (function() {
   // Function for initializing the board on page load
-  const initialBoardRender = function() {
+  function initialBoardRender() {
     // Board grid HTML to insert
     const boardHTML = `
   <div class="row">
@@ -42,7 +42,7 @@ const Render = (function() {
   `;
     // Insert into board
     $('.board').html(boardHTML);
-  };
+  }
 
   // Function for rendering the updated grid based on the state
   function renderUpdatedGrid() {
@@ -58,9 +58,15 @@ const Render = (function() {
         $(this).addClass(winClass);
       }
       // Update the cell with the strings from the state grid
-      $(this)
-        .children()
-        .html(state.grid[index]);
+      if (state.grid[index] !== '') {
+        $(this)
+          .children()
+          .html(state.grid[index]);
+      } else {
+        $(this)
+          .children()
+          .html('&nbsp;');
+      }
     });
   }
 
