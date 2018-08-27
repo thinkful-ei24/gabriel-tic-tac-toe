@@ -1,60 +1,11 @@
-const state = {
-  turn: 'x',
-  gameOver: false,
-  grid: ['', '', '', '', '', '', '', '', ''],
-  updateGrid: function(cellIndex) {
-    this.grid[cellIndex] = this.turn;
-    const winPattern = checkForWinner();
-    if (winPattern) this.gameOver = true;
-  },
-  changeTurn: function() {
-    if (this.turn === 'x') {
-      this.turn = 'o';
-    } else {
-      this.turn = 'x';
-    }
-  }
-};
+/* global state */
 
-// State modification functions
-function setGameOverStatus(bool) {
-  // set game over in here
-  state.gameOver = bool;
-}
+/* global state */
 
-function checkForWinner() {
-  console.log('checking for winner');
-  const winPatterns = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [2, 4, 6],
-    [0, 4, 8]
-  ];
-
-  for (let i = 0; i < winPatterns.length; i++) {
-    const winPattern = winPatterns[i];
-
-    // Prevent win with three nulls by checking first cell isn't null
-    if (!state.grid[winPattern[0]]) continue;
-
-    if (
-      state.grid[winPattern[0]] === state.grid[winPattern[1]] &&
-      state.grid[winPattern[1]] === state.grid[winPattern[2]]
-    ) {
-      console.log('winner');
-      return winPattern;
-    }
-  }
-
-  return null;
-}
-
-// Render functions
+/***** Render functions *****/
+// Function for initializing the board on page load
 function initialBoardRender() {
+  // Board grid HTML to insert
   const boardHTML = `
   <div class="row">
   <div class="cell" id="0">
@@ -90,38 +41,49 @@ function initialBoardRender() {
     </div>
   </div>
   `;
+  // Insert into board
   $('.board').html(boardHTML);
 }
 
+// Function for rendering the updated grid based on the state
 function renderUpdatedGrid() {
+  // Class for winning
+  const winClass = 'win';
+  // Array of jQuery objects of all cells on board
   const arrOfCells = $('.cell');
+
+  // Loop through each cell and update their classes
   arrOfCells.each(function(index) {
-    const gridIndex = index;
+    // If state contains a win pattern we will add the win class to each of the cells
+    if (state.winPattern.includes(index)) {
+      $(this).addClass(winClass);
+    }
+    // Update the cell with the strings from the state grid
     $(this)
       .children()
-      .html(state.grid[gridIndex]);
+      .html(state.grid[index]);
   });
 }
 
-function updateStoreGrid(cell) {
-  // get cell id
-  const cellID = cell.attr('id');
-  const cellIndex = cellID;
-  console.log(`cell index: ${cellIndex}`);
-  state.updateGrid(cellIndex);
-  state.changeTurn();
+/***** Event Listeners *****/
+// Function for initializing all event listeners
+function initializeEventListeners() {
+  // Delegated listener for cell clicks
+  $('.board').on('click', '.cell', function() {
+    state.updateStoreGrid($(this));
+    renderUpdatedGrid();
+  });
+  // Listener for new game button
+  $('#new-game').on('click', function() {
+    state.startNewGame();
+  });
 }
 
-// Event Listeners
-// Delegated cell listener
-$('.board').on('click', '.cell', function(event) {
-  updateStoreGrid($(this));
-  renderUpdatedGrid();
-});
-
-// On ready
+// Function for when DOM is ready
 function onReady() {
+  // Initialize the board and event listeners
   initialBoardRender();
+  initializeEventListeners();
 }
-
+// On ready
 $(onReady);
